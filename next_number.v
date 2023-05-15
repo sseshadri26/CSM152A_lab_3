@@ -44,6 +44,7 @@ module next_number (
 
   assign nextSeconds = select ? nextSecondsAlt : nextSecondsNormal;
   assign nextMinutes = select ? nextMinutesAlt : nextMinutesNormal;
-
+  // assign nextSeconds = 5;
+  // assign nextMinutes = 5;
 
 endmodule  //next_number
