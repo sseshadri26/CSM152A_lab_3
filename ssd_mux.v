@@ -6,8 +6,8 @@
 
 
 module ssd_mux (
-    input [3:0] inputNum,
-    output reg [6:0] outputSegments
+    input  [3:0] inputNum,
+    output [6:0] outputSegments
 );
 
   // 7 segment display
@@ -18,23 +18,24 @@ module ssd_mux (
   //  g
   // e c
   //  d
-
+  reg [6:0] outputSegmentsTemp;
+  assign outputSegments = outputSegmentsTemp;
   // assign using case statement
 
   always @(inputNum) begin
     case (inputNum)
-      0: outputSegments = 7'b0000001;
-      1: outputSegments = 7'b1001111;
-      2: outputSegments = 7'b0010010;
-      3: outputSegments = 7'b0000110;
-      4: outputSegments = 7'b1001100;
-      5: outputSegments = 7'b0100100;
-      6: outputSegments = 7'b0100000;
-      7: outputSegments = 7'b0001111;
-      8: outputSegments = 7'b0000000;
-      9: outputSegments = 7'b0000100;
+      0: outputSegmentsTemp = 7'b0000001;
+      1: outputSegmentsTemp = 7'b1001111;
+      2: outputSegmentsTemp = 7'b0010010;
+      3: outputSegmentsTemp = 7'b0000110;
+      4: outputSegmentsTemp = 7'b1001100;
+      5: outputSegmentsTemp = 7'b0100100;
+      6: outputSegmentsTemp = 7'b0100000;
+      7: outputSegmentsTemp = 7'b0001111;
+      8: outputSegmentsTemp = 7'b0000000;
+      9: outputSegmentsTemp = 7'b0000100;
 
-      default: outputSegments = 7'b1111111;
+      default: outputSegmentsTemp = 7'b1111111;
     endcase
   end
 

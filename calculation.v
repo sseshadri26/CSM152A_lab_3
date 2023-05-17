@@ -14,12 +14,9 @@ module calculation (
 
 );
 
-  wire [1:0] switches;
 
-  assign switches = {adj_switch, sel_switch};
-
-  reg  [5:0] currentSeconds;
-  reg  [5:0] currentMinutes;
+  reg  [5:0] currentSeconds = 0;
+  reg  [5:0] currentMinutes = 0;
 
 
   wire [5:0] nextSeconds;
@@ -29,7 +26,7 @@ module calculation (
   next_number nn (
       .currentSeconds(currentSeconds),
       .currentMinutes(currentMinutes),
-      .switches(switches),
+      .switches({adj_switch, sel_switch}),
 
 
       .nextSeconds(nextSeconds),
@@ -51,7 +48,7 @@ module calculation (
 
   always @(posedge clk1) begin
     // if adjust switch is ON
-    if (switches[0] == 0) begin
+    if (adj_switch == 0) begin
       if (pause == 1) begin
         currentSeconds <= currentSeconds;
         currentMinutes <= currentMinutes;
@@ -71,7 +68,7 @@ module calculation (
 
   always @(posedge clk2) begin
     // if adjust switch is OFF
-    if (switches[0] == 1) begin
+    if (adj_switch == 1) begin
       if (pause == 1) begin
         currentSeconds <= currentSeconds;
         currentMinutes <= currentMinutes;

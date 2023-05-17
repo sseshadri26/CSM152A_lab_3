@@ -1,8 +1,6 @@
-// github copilot, please create my module tyvm
-
 module stopwatch ();
 
-  wire clk;
+  reg clk;
   wire clk1Hz;
   wire clk2Hz;
   wire clk10Hz;
@@ -21,21 +19,21 @@ module stopwatch ();
   wire [3:0] currentMinutes1sPlace;
   wire [3:0] currentMinutes10sPlace;
 
-  wire [3:0] currentSeconds1sPlaceSegments;
-  wire [3:0] currentSeconds10sPlaceSegments;
-  wire [3:0] currentMinutes1sPlaceSegments;
-  wire [3:0] currentMinutes10sPlaceSegments;
+  wire [6:0] currentSeconds1sPlaceSegments;
+  wire [6:0] currentSeconds10sPlaceSegments;
+  wire [6:0] currentMinutes1sPlaceSegments;
+  wire [6:0] currentMinutes10sPlaceSegments;
 
 
-  wire [3:0] currentSeconds1sPlaceSegmentsBlinked;
-  wire [3:0] currentSeconds10sPlaceSegmentsBlinked;
-  wire [3:0] currentMinutes1sPlaceSegmentsBlinked;
-  wire [3:0] currentMinutes10sPlaceSegmentsBlinked;
+  wire [6:0] currentSeconds1sPlaceSegmentsBlinked;
+  wire [6:0] currentSeconds10sPlaceSegmentsBlinked;
+  wire [6:0] currentMinutes1sPlaceSegmentsBlinked;
+  wire [6:0] currentMinutes10sPlaceSegmentsBlinked;
 
-  wire pb_rst;
-  wire pb_pause;
-  wire sw_select;
-  wire sw_mode;
+  reg pb_rst;
+  reg pb_pause = 0;
+  reg sw_select = 0;
+  reg sw_mode = 0;
 
   wire pb_pause_filtered;
   wire sw_select_filtered;
@@ -94,17 +92,6 @@ module stopwatch ();
       .clk_out(slow_clk_en)
   );
 
-
-
-
-
-  next_number u_next_number (
-      .currentSeconds(currentSeconds),
-      .currentMinutes(currentMinutes),
-      .switches      (switches),
-      .nextSeconds   (nextSeconds),
-      .nextMinutes   (nextMinutes)
-  );
 
 
   // filter buttons and switches
@@ -181,28 +168,28 @@ module stopwatch ();
 
 
   blink u_blink_0 (
-      .in       (currentSeconds1sPlace),
+      .in       (currentSeconds1sPlaceSegments),
       .blink_clk(clk10Hz),
       .blink_sel(blink_sel_seconds),
       .out      (currentSeconds1sPlaceSegmentsBlinked)
   );
 
   blink u_blink_1 (
-      .in       (currentSeconds10sPlace),
+      .in       (currentSeconds10sPlaceSegments),
       .blink_clk(clk10Hz),
       .blink_sel(blink_sel_seconds),
       .out      (currentSeconds10sPlaceSegmentsBlinked)
   );
 
   blink u_blink_2 (
-      .in       (currentMinutes1sPlace),
+      .in       (currentMinutes1sPlaceSegments),
       .blink_clk(clk10Hz),
       .blink_sel(blink_sel_minutes),
       .out      (currentMinutes1sPlaceSegmentsBlinked)
   );
 
   blink u_blink_3 (
-      .in       (currentMinutes10sPlace),
+      .in       (currentMinutes10sPlaceSegments),
       .blink_clk(clk10Hz),
       .blink_sel(blink_sel_minutes),
       .out      (currentMinutes10sPlaceSegmentsBlinked)
@@ -216,29 +203,163 @@ module stopwatch ();
       .q  (pause)
   );
 
+  // takes in the select mode, whther or not we are paused, and the adjust mode, and outputs whether or not the seconds should blink 
+  assign blink_sel_seconds = ~pause & ~sw_select & sw_mode;
+  assign blink_sel_minutes = ~pause & sw_select & sw_mode;
 
-  mux_2_1 u_mux_2_1 (
-      .in0(sw_select_filtered),
-      .in1(pause),
-      .sel(sw_mode_filtered),
-      .out(blink_sel_seconds)
-  );
+  //   mux_2_1 u_mux_2_1 (
+  //       .in0(sw_select_filtered),
+  //       .in1(pause),
+  //       .sel(sw_mode_filtered),
+  //       .out(blink_sel_seconds)
+  //   );
+
+  //   mux_2_1 u_mux_2_1 (
+  //       .in0(sw_select_filtered),
+  //       .in1(pause),
+  //       .sel(sw_mode_filtered),
+  //       .out(blink_sel_seconds)
+  //   );
+
+
+
 
   calculation u_calculation (
       .outputSeconds(currentSeconds),
       .outputMinutes(currentMinutes),
       .rst          (rst),
       .pause        (pause),
-      .sel_switch   (sel_switch),
-      .adj_switch   (adj_switch),
+      .sel_switch   (sw_select),
+      .adj_switch   (sw_mode),
       .clk1         (clk1Hz),
       .clk2         (clk2Hz)
   );
 
 
 
+  // define period as 2
+  parameter PERIOD = 2;
+  //always begin, tick the clock, and define the period as 2
+  initial begin
+    clk = 0;
+    pb_rst = 0;
+    forever #(PERIOD / 2) clk = ~clk;
+  end
+
+  initial begin
+
+    #200;
+    $display("clk1Hz: %d, slow_clk_en: %d, clk: %d", clk1Hz, slow_clk_en, clk);
+    #124999;
+
+    $display("clk1Hz: %d, slow_clk_en: %d, clk: %d", clk1Hz, slow_clk_en, clk);
+    #124999;
 
 
+    $display("clk1Hz: %d, slow_clk_en: %d, clk: %d", clk1Hz, slow_clk_en, clk);
+
+    // print all the following variables:
+    //   .outputSeconds(currentSeconds),
+    //   .outputMinutes(currentMinutes),
+    //   .rst          (rst),
+    //   .pause        (pause),
+    //   .sel_switch   (sw_select_filtered),
+    //   .adj_switch   (sw_mode_filtered),
+    //   .clk1         (clk1Hz),
+    //   .clk2         (clk2Hz)
+
+
+    for (integer i = 0; i < 10; i = i + 1) begin
+      #50;
+      $display(
+          "\n%d:%d, rst: %d, pause: %d, sw_select_filtered: %d, sw_mode_filtered: %d, clk1Hz: %d, clk2Hz: %d",
+          currentMinutes, currentSeconds, rst, pause, sw_select, sw_mode, clk1Hz, clk2Hz);
+      //   print the blinked segments too
+      $display("%b %b:%b %b, clk10Hz: %d, blinkSelMins: %d, blinkSelSeconds: %d",
+               currentMinutes10sPlaceSegmentsBlinked, currentMinutes1sPlaceSegmentsBlinked,
+               currentSeconds10sPlaceSegmentsBlinked, currentSeconds1sPlaceSegmentsBlinked,
+               clk10Hz, blink_sel_minutes, blink_sel_seconds);
+      #10;
+      $display("%b %b:%b %b, clk10Hz: %d, blinkSelMins: %d, blinkSelSeconds: %d",
+               currentMinutes10sPlaceSegmentsBlinked, currentMinutes1sPlaceSegmentsBlinked,
+               currentSeconds10sPlaceSegmentsBlinked, currentSeconds1sPlaceSegmentsBlinked,
+               clk10Hz, blink_sel_minutes, blink_sel_seconds);
+      #10;
+
+    end
+
+
+    sw_select = 0;
+    sw_mode   = 1;
+
+    for (integer i = 0; i < 10; i = i + 1) begin
+      #50;
+      $display(
+          "\n%d:%d, rst: %d, pause: %d, sw_select_filtered: %d, sw_mode_filtered: %d, clk1Hz: %d, clk2Hz: %d",
+          currentMinutes, currentSeconds, rst, pause, sw_select, sw_mode, clk1Hz, clk2Hz);
+      $display("%b %b:%b %b, clk10Hz: %d, blinkSelMins: %d, blinkSelSeconds: %d",
+               currentMinutes10sPlaceSegmentsBlinked, currentMinutes1sPlaceSegmentsBlinked,
+               currentSeconds10sPlaceSegmentsBlinked, currentSeconds1sPlaceSegmentsBlinked,
+               clk10Hz, blink_sel_minutes, blink_sel_seconds);
+      #10;
+      $display("%b %b:%b %b, clk10Hz: %d, blinkSelMins: %d, blinkSelSeconds: %d",
+               currentMinutes10sPlaceSegmentsBlinked, currentMinutes1sPlaceSegmentsBlinked,
+               currentSeconds10sPlaceSegmentsBlinked, currentSeconds1sPlaceSegmentsBlinked,
+               clk10Hz, blink_sel_minutes, blink_sel_seconds);
+      #10;
+
+    end
+
+
+    sw_select = 1;
+    sw_mode   = 1;
+
+    for (integer i = 0; i < 10; i = i + 1) begin
+      #50;
+      $display(
+          "\n%d:%d, rst: %d, pause: %d, sw_select_filtered: %d, sw_mode_filtered: %d, clk1Hz: %d, clk2Hz: %d",
+          currentMinutes, currentSeconds, rst, pause, sw_select, sw_mode, clk1Hz, clk2Hz);
+      $display("%b %b:%b %b, clk10Hz: %d, blinkSelMins: %d, blinkSelSeconds: %d",
+               currentMinutes10sPlaceSegmentsBlinked, currentMinutes1sPlaceSegmentsBlinked,
+               currentSeconds10sPlaceSegmentsBlinked, currentSeconds1sPlaceSegmentsBlinked,
+               clk10Hz, blink_sel_minutes, blink_sel_seconds);
+      #10;
+      $display("%b %b:%b %b, clk10Hz: %d, blinkSelMins: %d, blinkSelSeconds: %d",
+               currentMinutes10sPlaceSegmentsBlinked, currentMinutes1sPlaceSegmentsBlinked,
+               currentSeconds10sPlaceSegmentsBlinked, currentSeconds1sPlaceSegmentsBlinked,
+               clk10Hz, blink_sel_minutes, blink_sel_seconds);
+      #10;
+
+    end
+
+
+    sw_select = 0;
+    sw_mode   = 0;
+
+    for (integer i = 0; i < 10; i = i + 1) begin
+      #50;
+      $display(
+          "\n%d:%d, rst: %d, pause: %d, sw_select_filtered: %d, sw_mode_filtered: %d, clk1Hz: %d, clk2Hz: %d",
+          currentMinutes, currentSeconds, rst, pause, sw_select, sw_mode, clk1Hz, clk2Hz);
+      $display("%b %b:%b %b, clk10Hz: %d, blinkSelMins: %d, blinkSelSeconds: %d",
+               currentMinutes10sPlaceSegmentsBlinked, currentMinutes1sPlaceSegmentsBlinked,
+               currentSeconds10sPlaceSegmentsBlinked, currentSeconds1sPlaceSegmentsBlinked,
+               clk10Hz, blink_sel_minutes, blink_sel_seconds);
+      #10;
+      $display("%b %b:%b %b, clk10Hz: %d, blinkSelMins: %d, blinkSelSeconds: %d",
+               currentMinutes10sPlaceSegmentsBlinked, currentMinutes1sPlaceSegmentsBlinked,
+               currentSeconds10sPlaceSegmentsBlinked, currentSeconds1sPlaceSegmentsBlinked,
+               clk10Hz, blink_sel_minutes, blink_sel_seconds);
+      #10;
+
+
+
+    end
+
+    $finish;
+
+
+  end
 
 
 

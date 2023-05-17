@@ -15,15 +15,14 @@ module blink (
   input blink_sel;
   output [6:0] out;
 
-  reg [6:0] blank_output = 7'b1111111;
-  wire on_off;  // Originally it is 1
+  wire is_on;  // Originally it is 1
 
-  assign on_off = (blink_sel == 0) || (blink_sel == 1 && blink_clk == 1);
+  assign is_on = blink_sel == 0 || blink_clk == 0;
 
   //on if sel = 0 or (sel = 1 and clk is posedge)
   //off if sel = 1 and clk is negedge
 
   // on = true, off = false
-  assign out = on_off ? in : blank_output;
+  assign out   = is_on ? in : 7'b1111111;
 
 endmodule

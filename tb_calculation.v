@@ -65,6 +65,26 @@ module tb_calculation;
     clk1 = 0;
     // clk2 = 0;
     #10;
+    $display("Current time: %d:%d", outputMinutes, outputSeconds);
+
+    #10;
+    clk1 = 1;
+    // clk2 = 1;
+    #10;
+
+    clk1 = 0;
+    // clk2 = 0;
+    #10;
+    $display("Current time: %d:%d", outputMinutes, outputSeconds);
+
+    #10;
+    clk1 = 1;
+    // clk2 = 1;
+    #10;
+
+    clk1 = 0;
+    // clk2 = 0;
+    #10;
     //print the current time
     $display("Current time: %d:%d", outputMinutes, outputSeconds);
 

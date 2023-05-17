@@ -1,12 +1,12 @@
 module tff (
     input clk,
-    input rstn,
+    input rst,
     input t,
     output reg q
 );
 
   always @(posedge clk) begin
-    if (!rstn) q <= 0;
+    if (!rst) q <= 0;
     else if (t) q <= ~q;
     else q <= q;
   end
