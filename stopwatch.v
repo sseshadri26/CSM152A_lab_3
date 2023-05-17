@@ -1,4 +1,13 @@
-module stopwatch ();
+module stopwatch (
+    input clk,
+    input rst,
+    input pause,
+    input sel,
+    input wire adjust,
+    output reg [6:0] seven_seg,
+    output reg [3:0] anode_count
+);
+
 
   reg clk;
   wire clk1Hz;
@@ -48,6 +57,19 @@ module stopwatch ();
   //create the four clocks
 
   // 1 Hz
+
+  ssd_display_mux u_ssd_display_mux (
+      .segments1      (currentMinutes10sPlaceSegmentsBlinked),
+      .segments2      (currentMinutes1sPlaceSegmentsBlinked),
+      .segments3      (currentSeconds10sPlaceSegmentsBlinked),
+      .segments4      (currentSeconds1sPlaceSegmentsBlinked),
+      .clk            (clk100Hz),
+      .Anode_Activate (anode_count),
+      .output_segments(anode_count)
+  );
+
+
+
   clk_div #(
       .DIVISOR(100000000)
   ) u_clk_div_0 (

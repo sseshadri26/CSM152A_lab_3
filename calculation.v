@@ -46,9 +46,9 @@ module calculation (
   end
 
 
-  always @(posedge clk1) begin
+  always @(posedge clk1 or posedge clk2) begin
     // if adjust switch is ON
-    if (adj_switch == 0) begin
+    if (adj_switch == 0 && clk1 || adj_switch && clk2) begin
       if (pause == 1) begin
         currentSeconds <= currentSeconds;
         currentMinutes <= currentMinutes;
@@ -66,17 +66,5 @@ module calculation (
 
   end
 
-  always @(posedge clk2) begin
-    // if adjust switch is OFF
-    if (adj_switch == 1) begin
-      if (pause == 1) begin
-        currentSeconds <= currentSeconds;
-        currentMinutes <= currentMinutes;
-      end else begin
-        currentSeconds <= nextSeconds;
-        currentMinutes <= nextMinutes;
-      end
-    end
-  end
 
 endmodule
