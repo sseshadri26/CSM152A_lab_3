@@ -16,7 +16,7 @@ module clk_div #(
 
 );
 
-  reg [23:0] counter = 28'd0;
+  reg [27:0] counter = 28'd0;
 
 
   //count up to div_frequency and then switch clk_dv

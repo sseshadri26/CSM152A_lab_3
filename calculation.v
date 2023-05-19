@@ -36,34 +36,26 @@ module calculation (
 
   assign outputSeconds = currentSeconds;
   assign outputMinutes = currentMinutes;
+  
+  //wire clocks = clk1|| clk2;
 
-  always @* begin
+
+  always @(posedge clk2) begin
+    // if adjust switch is ON
     if (rst == 1) begin
       currentSeconds <= 6'b000000;
       currentMinutes <= 6'b000000;
     end
-
-  end
-
-
-  always @(posedge clk1 or posedge clk2) begin
-    // if adjust switch is ON
-    if (adj_switch == 0 && clk1 || adj_switch && clk2) begin
-      if (pause == 1) begin
-        currentSeconds <= currentSeconds;
-        currentMinutes <= currentMinutes;
-      end else begin
-        //print hello
+    else if (adj_switch || clk1) begin
+      if (pause == 0) begin
         currentSeconds <= nextSeconds;
         currentMinutes <= nextMinutes;
-        // $display("calc Next time: %d:%d", nextMinutes, nextSeconds);
-        // $display("calc Current time: %d:%d", currentMinutes, currentSeconds);
-
       end
-
     end
-
-
+    if (rst == 1) begin
+      currentSeconds <= 6'b000000;
+      currentMinutes <= 6'b000000;
+    end
   end
 
 
